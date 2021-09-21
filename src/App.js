@@ -3,7 +3,9 @@ import contacts from './contacts.json'
 import './App.css';
 
 
-let contactsCopy = [...contacts];
+
+let contactsCopy = [...contacts].filter((contact, index) => { return index >4});
+
 function shuffle(array) {
   let currentIndex = array.length,  randomIndex;
 
@@ -16,14 +18,16 @@ function shuffle(array) {
   return array;
 }
 
+const stateContacts = [...contacts].filter((contact, index) => {return index <= 4} )
 shuffle(contactsCopy);
 
 function App() {
-  console.log('line 22', contactsCopy)
-const [contactList, setContactList] = useState(contacts.slice(0,5))
+const [contactList, setContactList] = useState(stateContacts)
+
 function getUniqueRandomContact() {
-  if(contactsCopy.length === 0) return
-  setContactList(currentList => [...currentList, contactsCopy.pop()])
+  if(!contactsCopy.length) return
+  const newContact = contactsCopy.pop()
+  setContactList(currentList => [...currentList, newContact])
 }
 
 function sortByName() {
@@ -34,13 +38,18 @@ function sortByPopularity() {
   setContactList(currentList => [...currentList.sort((a,b) => b.popularity - a.popularity)])
 }
 
+function deleteContact(id) {
+  const updatedArray = contactList.filter(contact => {return contact.id !== id})
+  setContactList(updatedArray)
+}
+
   return (
     <div className="App">
     <h1>IronContacts</h1>
     <div>
-    <button onClick={getUniqueRandomContact}>Add "Contact"</button>
-    <button onClick={sortByPopularity}>Sort by Popularity</button>
-    <button onClick={sortByName}>Sort by name</button>
+    <button onClick={() => getUniqueRandomContact()}>Add "Contact"</button>
+    <button onClick={() => sortByPopularity()}>Sort by Popularity</button>
+    <button onClick={() => sortByName()}>Sort by name</button>
     </div>
       <table>
         <tr>
@@ -59,6 +68,7 @@ function sortByPopularity() {
               <td>{Math.round(contact.popularity * 100) / 100}</td>
               <td>{contact.wonOscar ? 'Yes': ''}</td>
               <td>{contact.wonEmmy ? 'Yes': ''}</td>
+              <td><button onClick={() => deleteContact(contact.id)}>Remove</button></td>
             </tr>
             </>
           )
